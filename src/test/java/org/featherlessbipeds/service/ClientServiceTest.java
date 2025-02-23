@@ -1,5 +1,9 @@
 package org.featherlessbipeds.service;
 
+import org.featherlessbipeds.exception.EditProfileException;
+import org.featherlessbipeds.model.Client;
+import org.featherlessbipeds.repository.contracts.ClientRepository;
+import org.featherlessbipeds.utils.ClientFlag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -9,12 +13,12 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class ClientServiceTest
 {
-    // Actual string is too long.
     private final String photo = "mocked-base64-encoded-photo";
     private Client originalClientData;
 
@@ -36,8 +40,19 @@ public class ClientServiceTest
                 .build();
     }
 
+    private void usualAssertRoutine(Client c1, Client c2)
+    {
+        assertNotNull(c1);
+        assertNotNull(c2);
+        assertEquals(c1.getName(), c2.getName());
+        assertEquals(c1.getPassword(), c2.getPassword());
+        assertEquals(c1.getPhoto(), c2.getPhoto());
+        assertEquals(c1.getSurname(), c2.getSurname());
+        assertEquals(c1.getEmail(), c2.getEmail());
+    }
+
     @Test
-    public void tc01_editProfile_ReturnsSuccessFlag_WhenSuccessful()
+    public void tc01_editProfile_ReturnsClient_WhenSuccessful() throws EditProfileException
     {
         Client newClientData = Client.builder()
                 .email("newEmail@gmail.com")
@@ -47,19 +62,15 @@ public class ClientServiceTest
                 .photo(photo)
                 .build();
 
-        // Verify if user exists
         when(repository.findById(originalClientData.getId()))
                 .thenReturn(Optional.of(originalClientData));
-        // Verify if email is available or if its from the same user
         when(repository.findByEmail(newClientData.getEmail()))
                 .thenReturn(Optional.of(originalClientData));
-        // Updates user info
         when(repository.update(newClientData))
-                .thenReturn(true);
+                .thenReturn(Optional.of(newClientData));
 
-        ClientFlag flag = service.editProfile(originalClientData, newClientData);
-
-        asserEquals(ClientFlag.EDIT_PROFILE_SUCCESS, flag);
+        Client result = service.editProfile(originalClientData, newClientData);
+        usualAssertRoutine(newClientData, result);
 
         verify(repository, times(1)).findById(originalClientData.getId());
         verify(repository, times(1)).findByEmail(newClientData.getEmail());
@@ -67,10 +78,10 @@ public class ClientServiceTest
     }
 
     @Test
-    public void tc02_editProfile_ReturnsErrorFlag_WhenEmailAlreadyExists()
+    public void tc02_editProfile_ThrowsException_WhenEmailAlreadyExists()
     {
         Client newClientData = Client.builder()
-                .email("alreadyExistingEmail.com")
+                .email("alreadyExistingEmail@mail.com")
                 .name("Helmuth")
                 .surname("Voss")
                 .cep("00000-000")
@@ -84,17 +95,17 @@ public class ClientServiceTest
         when(repository.findByEmail(newClientData.getEmail()))
                 .thenReturn(Optional.of(otherClient));
 
-        ClientFlag flag = service.editProfile(originalClientData, newClientData);
+        EditProfileException exception = assertThrows(EditProfileException.class,
+                () -> service.editProfile(originalClientData, newClientData));
 
-        asserEquals(ClientFlag.EDIT_PROFILE_ERROR, flag);
-
+        assertEquals(ClientFlag.EDIT_PROFILE_EMAIL_CONFLICT, exception.getFlag());
         verify(repository, times(1)).findById(originalClientData.getId());
         verify(repository, times(1)).findByEmail(newClientData.getEmail());
         verify(repository, never()).update(any());
     }
 
     @Test
-    public void tc03_editProfile_ReturnsErrorFlag_WhenNameIsEmpty()
+    public void tc03_editProfile_ThrowsException_WhenNameIsEmpty()
     {
         Client newClientData = Client.builder()
                 .email("newEmail@gmail.com")
@@ -104,17 +115,17 @@ public class ClientServiceTest
                 .photo(photo)
                 .build();
 
-        ClientFlag flag = service.editProfile(originalClientData, newClientData);
+        EditProfileException exception = assertThrows(EditProfileException.class,
+                () -> service.editProfile(originalClientData, newClientData));
 
-        asserEquals(ClientFlag.EDIT_PROFILE_ERROR, flag);
-
+        assertEquals(ClientFlag.EDIT_PROFILE_EMPTY_NAME, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
     }
 
     @Test
-    public void tc04_editProfile_ReturnsErrorFlag_WhenSurnameIsEmpty()
+    public void tc04_editProfile_ThrowsException_WhenSurnameIsEmpty()
     {
         Client newClientData = Client.builder()
                 .email("newEmail@gmail.com")
@@ -124,17 +135,17 @@ public class ClientServiceTest
                 .photo(photo)
                 .build();
 
-        ClientFlag flag = service.editProfile(originalClientData, newClientData);
+        EditProfileException exception = assertThrows(EditProfileException.class,
+                () -> service.editProfile(originalClientData, newClientData));
 
-        asserEquals(ClientFlag.EDIT_PROFILE_ERROR, flag);
-
+        assertEquals(ClientFlag.EDIT_PROFILE_EMPTY_SURNAME, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
     }
 
     @Test
-    public void tc05_editProfile_ReturnsErrorFlag_WhenEmailIsEmpty()
+    public void tc05_editProfile_ThrowsException_WhenEmailIsEmpty()
     {
         Client newClientData = Client.builder()
                 .email("")
@@ -144,17 +155,17 @@ public class ClientServiceTest
                 .photo(photo)
                 .build();
 
-        ClientFlag flag = service.editProfile(originalClientData, newClientData);
+        EditProfileException exception = assertThrows(EditProfileException.class,
+                () -> service.editProfile(originalClientData, newClientData));
 
-        asserEquals(ClientFlag.EDIT_PROFILE_ERROR, flag);
-
+        assertEquals(ClientFlag.EDIT_PROFILE_EMPTY_EMAIL, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
     }
 
     @Test
-    public void tc06_editProfile_ReturnsErrorFlag_WhenCepIsEmpty()
+    public void tc06_editProfile_ThrowsException_WhenCepIsEmpty()
     {
         Client newClientData = Client.builder()
                 .email("newEmail@gmail.com")
@@ -164,17 +175,17 @@ public class ClientServiceTest
                 .photo(photo)
                 .build();
 
-        ClientFlag flag = service.editProfile(originalClientData, newClientData);
+        EditProfileException exception = assertThrows(EditProfileException.class,
+                () -> service.editProfile(originalClientData, newClientData));
 
-        asserEquals(ClientFlag.EDIT_PROFILE_ERROR, flag);
-
+        assertEquals(ClientFlag.EDIT_PROFILE_EMPTY_CEP, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
     }
 
     @Test
-    public void tc07_editProfile_ReturnsErrorFlag_WhenEmailIsInvalid()
+    public void tc07_editProfile_ThrowsException_WhenEmailIsInvalid()
     {
         Client newClientData = Client.builder()
                 .email("32132143254643")
@@ -184,10 +195,10 @@ public class ClientServiceTest
                 .photo(photo)
                 .build();
 
-        ClientFlag flag = service.editProfile(originalClientData, newClientData);
+        EditProfileException exception = assertThrows(EditProfileException.class,
+                () -> service.editProfile(originalClientData, newClientData));
 
-        asserEquals(ClientFlag.EDIT_PROFILE_ERROR, flag);
-
+        assertEquals(ClientFlag.EDIT_PROFILE_INVALID_EMAIL, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
