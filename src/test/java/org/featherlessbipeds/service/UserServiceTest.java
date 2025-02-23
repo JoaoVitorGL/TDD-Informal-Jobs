@@ -33,7 +33,10 @@ public class UserServiceTest
                 .thenReturn(Optional.of(u));
 
         Flag flag = service.login(u);
+
         assertEquals(UserFlag.LOGIN_SUCCESS, flag);
+
+        verify(repository, times(1)).findByEmailAndPassword(u.getEmail(), u.getPassword());
     }
 
     @Test
@@ -46,6 +49,8 @@ public class UserServiceTest
         Flag flag = service.login(u);
 
         assertEquals(UserFlag.LOGIN_ERROR, flag);
+
+        verify(repository, times(1)).findByEmailAndPassword(u.getEmail(), u.getPassword());
     }
 
     @Test
@@ -58,6 +63,8 @@ public class UserServiceTest
         Flag flag = service.login(u);
 
         assertEquals(UserFlag.LOGIN_ERROR, flag);
+
+        verify(repository, times(1)).findByEmailAndPassword(u.getEmail(), u.getPassword());
     }
 
     @Test
@@ -73,6 +80,9 @@ public class UserServiceTest
         Flag flag = service.googleLogin(jwtToken);
 
         assertEquals(UserFlag.GOOGLE_LOGIN_SUCCESS, flag);
+
+        verify(googleAuthService, times(1)).verifyToken(jwtToken);
+        verify(repository, times(1)).findByEmail(u.getEmail());
     }
 
     @Test
@@ -86,6 +96,9 @@ public class UserServiceTest
         Flag flag = service.googleLogin(jwtToken);
 
         assertEquals(UserFlag.GOOGLE_LOGIN_ERROR, flag);
+
+        verify(googleAuthService, times(1)).verifyToken(jwtToken);
+        verify(repository, never()).findByEmail(any());
     }
 
     @Test
@@ -101,6 +114,9 @@ public class UserServiceTest
         Flag flag = service.facebookLogin(jwtToken);
 
         assertEquals(UserFlag.FACEBOOK_LOGIN_SUCCESS, flag);
+
+        verify(facebookAuthService, times(1)).verifyToken(jwtToken);
+        verify(repository, times(1)).findByEmail(u.getEmail());
     }
 
     @Test
@@ -114,6 +130,9 @@ public class UserServiceTest
         Flag flag = service.facebookLogin(jwtToken);
 
         assertEquals(UserFlag.FACEBOOK_LOGIN_ERROR, flag);
+
+        verify(facebookAuthService, times(1)).verifyToken(jwtToken);
+        verify(repository, never()).findByEmail(any());
     }
 
     @Test
@@ -132,6 +151,9 @@ public class UserServiceTest
         Flag flag = service.changePassword(u, appToken, newPwd, newPwdConfirm);
 
         assertEquals(UserFlag.CHANGE_PASSWORD_SUCCESS, flag);
+
+        verify(appTokenService, times(1)).verifyToken(appToken);
+        verify(repository, times(1)).findByEmail(u.getEmail());
     }
 
     @Test
@@ -148,6 +170,9 @@ public class UserServiceTest
         Flag flag = service.changePassword(u, appToken, newPwd, newPwdConfirm);
 
         assertEquals(UserFlag.CHANGE_PASSWORD_ERROR, flag);
+
+        verify(appTokenService, times(1)).verifyToken(appToken);
+        verify(repository, never()).findByEmail(any());
     }
 
     @Test
@@ -166,5 +191,8 @@ public class UserServiceTest
         Flag flag = service.changePassword(u, appToken, newPwd, newPwdConfirm);
 
         assertEquals(UserFlag.CHANGE_PASSWORD_ERROR, flag);
+
+        verify(appTokenService, times(1)).verifyToken(appToken);
+        verify(repository, times(1)).findByEmail(u.getEmail());
     }
 }
