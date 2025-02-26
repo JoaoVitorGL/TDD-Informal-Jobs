@@ -8,6 +8,6 @@ public interface FreelancerRepository {
 
     Optional<Freelancer> findById(Integer id);
     Optional<Freelancer> findByEmail(String email);
-    Optional<Freelancer> update(Integer originalFreelancerId ,Freelancer newFreelancer);
+    Optional<Freelancer> update(Freelancer newFreelancer);
 
 }
