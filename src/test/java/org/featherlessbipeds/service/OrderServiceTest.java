@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-public class OrderServiceServiceTest {
+public class OrderServiceTest {
 
     private final String attachment = "anexo.pdf";
     private final String photo = "retrato_do_cabra";
@@ -31,7 +31,7 @@ public class OrderServiceServiceTest {
     private LocationService locationService;
     @Spy
     @InjectMocks
-    private OrderServiceService orderServiceService;
+    private OrderService orderService;
     private Client defaultClient;
 
     @BeforeEach
@@ -64,12 +64,21 @@ public class OrderServiceServiceTest {
         when(locationService.isValidLocation(newOrder.getLocation())).thenReturn(true);
         when(locationService.isLocationFarFromAddress(newOrder.getLocation(),defaultClient.getCep())).thenReturn(false);
 
-        var createdOrder = orderServiceService.orderService(newOrder);
+        var createdOrder = orderService.orderService(newOrder);
 
         assertNotNull(createdOrder);
 
+       assertEquals(newOrder.getClient(), createdOrder.getClient());
+       assertEquals(newOrder.getServiceCategory(), createdOrder.getServiceCategory());
+       assertEquals(newOrder.getTermInDays(), createdOrder.getTermInDays());
+       assertEquals(newOrder.getDescription(), createdOrder.getDescription());
+       assertEquals(newOrder.getBudget(), createdOrder.getBudget());
+       assertEquals(newOrder.getAttachment(), createdOrder.getAttachment());
+       assertEquals(newOrder.getLocation(), createdOrder.getLocation());
+
+
         verify(repository,times(1)).save(newOrder);
-        verify(orderServiceService,times(1)).attachmentValidation(newOrder.getAttachment());
+        verify(orderService,times(1)).attachmentValidation(newOrder.getAttachment());
 
     }
     @Test
@@ -87,13 +96,13 @@ public class OrderServiceServiceTest {
                 .build();
 
        OrderServiceException exception =  assertThrows(OrderServiceException.class,
-               () -> orderServiceService.orderService(newOrder)
+               () -> orderService.orderService(newOrder)
        );
 
        assertEquals(exception.getFlag(), OrderServiceFlag.ORDER_BUDGET_INVALID);
 
         verify(repository,never()).save(newOrder);
-        verify(orderServiceService,never()).attachmentValidation(any());
+        verify(orderService,never()).attachmentValidation(any());
         verify(locationService,never()).isValidLocation(any());
         verify(locationService,never()).isLocationFarFromAddress(any(),any());
     }
@@ -112,13 +121,13 @@ public class OrderServiceServiceTest {
                 .build();
 
         OrderServiceException exception =  assertThrows(OrderServiceException.class,
-                () -> orderServiceService.orderService(newOrder)
+                () -> orderService.orderService(newOrder)
         );
 
         assertEquals(exception.getFlag(), OrderServiceFlag.ORDER_TERM_INVALID);
 
         verify(repository,never()).save(newOrder);
-        verify(orderServiceService,never()).attachmentValidation(any());
+        verify(orderService,never()).attachmentValidation(any());
         verify(locationService,never()).isValidLocation(any());
         verify(locationService,never()).isLocationFarFromAddress(any(),any());
     }
@@ -136,10 +145,10 @@ public class OrderServiceServiceTest {
                 .location(new LocationEntity(-35.7895,-8.7458))
                 .build();
 
-        when(orderServiceService.attachmentValidation(newOrder.getAttachment())).thenReturn(false);
+        when(orderService.attachmentValidation(newOrder.getAttachment())).thenReturn(false);
 
         OrderServiceException exception =  assertThrows(OrderServiceException.class,
-                () -> orderServiceService.orderService(newOrder)
+                () -> orderService.orderService(newOrder)
         );
 
         assertEquals(exception.getFlag(), OrderServiceFlag.ORDER_ATTACHMENT_FORMAT_INVALID);
@@ -163,13 +172,13 @@ public class OrderServiceServiceTest {
                 .build();
 
         OrderServiceException exception =  assertThrows(OrderServiceException.class,
-                () -> orderServiceService.orderService(newOrder)
+                () -> orderService.orderService(newOrder)
         );
 
         assertEquals(exception.getFlag(), OrderServiceFlag.ORDER_DESCRIPTION_EMPTY);
 
         verify(repository,never()).save(newOrder);
-        verify(orderServiceService,never()).attachmentValidation(any());
+        verify(orderService,never()).attachmentValidation(any());
         verify(locationService,never()).isValidLocation(any());
         verify(locationService,never()).isLocationFarFromAddress(any(),any());
 
@@ -189,13 +198,13 @@ public class OrderServiceServiceTest {
                 .build();
 
         OrderServiceException exception =  assertThrows(OrderServiceException.class,
-                () -> orderServiceService.orderService(newOrder)
+                () -> orderService.orderService(newOrder)
         );
 
         assertEquals(exception.getFlag(), OrderServiceFlag.ORDER_SERVICE_CATEGORY_EMPTY);
 
         verify(repository,never()).save(newOrder);
-        verify(orderServiceService,never()).attachmentValidation(any());
+        verify(orderService,never()).attachmentValidation(any());
         verify(locationService,never()).isValidLocation(any());
         verify(locationService,never()).isLocationFarFromAddress(any(),any());
 
@@ -217,13 +226,13 @@ public class OrderServiceServiceTest {
         when(locationService.isValidLocation(newOrder.getLocation())).thenReturn(false);
 
         OrderServiceException exception =  assertThrows(OrderServiceException.class,
-                () -> orderServiceService.orderService(newOrder)
+                () -> orderService.orderService(newOrder)
         );
 
         assertEquals(exception.getFlag(), OrderServiceFlag.ORDER_LOCATION_INVALID);
 
-        verify(repository,never()).save(newOrder);
-
+        verify(repository,never()).save(any());
+        verify(locationService,never()).isLocationFarFromAddress(any(),any());
     }
     @Test
     public void tc08_client_orders_service_location_too_far_from_CEP(){
@@ -243,13 +252,13 @@ public class OrderServiceServiceTest {
         when(locationService.isLocationFarFromAddress(newOrder.getLocation(),newOrder.getClient().getCep())).thenReturn(true);
 
         OrderServiceException exception =  assertThrows(OrderServiceException.class,
-                () -> orderServiceService.orderService(newOrder)
+                () -> orderService.orderService(newOrder)
         );
 
         assertEquals(exception.getFlag(), OrderServiceFlag.ORDER_LOCATION_MISMATCH);
 
         verify(repository,never()).save(newOrder);
-
+        verify(locationService,times(1)).isValidLocation(newOrder.getLocation());
 
     }
 
