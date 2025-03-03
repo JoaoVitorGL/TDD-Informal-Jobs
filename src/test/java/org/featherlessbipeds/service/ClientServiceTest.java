@@ -3,7 +3,7 @@ package org.featherlessbipeds.service;
 import org.featherlessbipeds.exception.EditProfileException;
 import org.featherlessbipeds.model.Client;
 import org.featherlessbipeds.repository.contracts.ClientRepository;
-import org.featherlessbipeds.utils.ClientFlag;
+import org.featherlessbipeds.utils.EditProfileFlag;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -98,7 +98,7 @@ public class ClientServiceTest
         EditProfileException exception = assertThrows(EditProfileException.class,
                 () -> service.editProfile(originalClientData, newClientData));
 
-        assertEquals(ClientFlag.EDIT_PROFILE_EMAIL_CONFLICT, exception.getFlag());
+        assertEquals(EditProfileFlag.EDIT_PROFILE_EMAIL_CONFLICT, exception.getFlag());
         verify(repository, times(1)).findById(originalClientData.getId());
         verify(repository, times(1)).findByEmail(newClientData.getEmail());
         verify(repository, never()).update(any());
@@ -118,7 +118,7 @@ public class ClientServiceTest
         EditProfileException exception = assertThrows(EditProfileException.class,
                 () -> service.editProfile(originalClientData, newClientData));
 
-        assertEquals(ClientFlag.EDIT_PROFILE_EMPTY_NAME, exception.getFlag());
+        assertEquals(EditProfileFlag.EDIT_PROFILE_EMPTY_NAME, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
@@ -138,7 +138,7 @@ public class ClientServiceTest
         EditProfileException exception = assertThrows(EditProfileException.class,
                 () -> service.editProfile(originalClientData, newClientData));
 
-        assertEquals(ClientFlag.EDIT_PROFILE_EMPTY_SURNAME, exception.getFlag());
+        assertEquals(EditProfileFlag.EDIT_PROFILE_EMPTY_SURNAME, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
@@ -158,7 +158,7 @@ public class ClientServiceTest
         EditProfileException exception = assertThrows(EditProfileException.class,
                 () -> service.editProfile(originalClientData, newClientData));
 
-        assertEquals(ClientFlag.EDIT_PROFILE_EMPTY_EMAIL, exception.getFlag());
+        assertEquals(EditProfileFlag.EDIT_PROFILE_EMPTY_EMAIL, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
@@ -178,7 +178,7 @@ public class ClientServiceTest
         EditProfileException exception = assertThrows(EditProfileException.class,
                 () -> service.editProfile(originalClientData, newClientData));
 
-        assertEquals(ClientFlag.EDIT_PROFILE_EMPTY_CEP, exception.getFlag());
+        assertEquals(EditProfileFlag.EDIT_PROFILE_EMPTY_CEP, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());
@@ -198,7 +198,7 @@ public class ClientServiceTest
         EditProfileException exception = assertThrows(EditProfileException.class,
                 () -> service.editProfile(originalClientData, newClientData));
 
-        assertEquals(ClientFlag.EDIT_PROFILE_INVALID_EMAIL, exception.getFlag());
+        assertEquals(EditProfileFlag.EDIT_PROFILE_INVALID_EMAIL, exception.getFlag());
         verify(repository, never()).findById(any());
         verify(repository, never()).findByEmail(any());
         verify(repository, never()).update(any());

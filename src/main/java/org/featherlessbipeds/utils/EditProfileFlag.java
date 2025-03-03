@@ -1,6 +1,6 @@
 package org.featherlessbipeds.utils;
 
-public enum ClientFlag
+public enum EditProfileFlag
 {
     EDIT_PROFILE_INVALID_EMAIL,
     EDIT_PROFILE_EMPTY_EMAIL,
