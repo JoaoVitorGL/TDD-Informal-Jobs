@@ -1,4 +1,4 @@
-package org.featherlessbipeds.gouveia.entity;
+package org.featherlessbipeds.gouveia.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,15 +1,15 @@
 package org.featherlessbipeds.gouveia.service;
 
-import org.featherlessbipeds.gouveia.entity.Client;
+import org.featherlessbipeds.gouveia.model.Client;
 import org.featherlessbipeds.gouveia.exception.RegisterException;
 import org.featherlessbipeds.gouveia.repository.ClientRepository;
 
 import java.util.regex.Pattern;
 
-public class ClientRegisterService
-{
+public class ClientRegisterService {
     private ClientRepository clientRepository;
     private static final String code = "123456";
+
     public ClientRegisterService(ClientRepository clientRepository) {
         this.clientRepository = clientRepository;
     }
