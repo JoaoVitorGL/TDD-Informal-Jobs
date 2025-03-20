@@ -1,5 +1,7 @@
 package org.featherlessbipeds.serviceGouveia;
 
+import org.featherlessbipeds.gouveia.entity.Client;
+import org.featherlessbipeds.gouveia.repository.ClientRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -8,15 +10,14 @@ import org.mockito.MockitoAnnotations;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.mockito.Mockito.*;
 
 public class ClientRegistrationServiceTest
 {
     @Mock
     private ClientRepository clientRepository;
-
     @InjectMocks
     private ClientService clientService;
-
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
