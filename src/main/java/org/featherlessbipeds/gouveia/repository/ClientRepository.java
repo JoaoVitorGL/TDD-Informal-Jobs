@@ -7,7 +7,7 @@ import java.util.List;
 
 public class ClientRepository
 {
-    private List<Client> clients = new ArrayList<>();
+    private final List<Client> clients = new ArrayList<>();
     public boolean existsByEmail(String email) {
         return clients.stream().anyMatch(client -> client.getEmail().equals(email));
     }
