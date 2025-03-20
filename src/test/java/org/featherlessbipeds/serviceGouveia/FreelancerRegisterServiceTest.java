@@ -1,5 +1,10 @@
 package org.featherlessbipeds.serviceGouveia;
 
+import org.featherlessbipeds.gouveia.exception.RegisterException;
+import org.featherlessbipeds.gouveia.model.Freelancer;
+import org.featherlessbipeds.gouveia.model.FreelancerTagsEnum;
+import org.featherlessbipeds.gouveia.repository.FreelancerRepository;
+import org.featherlessbipeds.gouveia.service.FreelancerRegisterService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -12,8 +17,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class FreelancerRegisterServiceTest
-{
+public class FreelancerRegisterServiceTest {
     @Mock
     private FreelancerRepository freelancerRepository;
     @InjectMocks
@@ -47,7 +51,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc02_registerFreelancer_ExistingEmail() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123",
+                "12345678900", tags);
         when(freelancerRepository.existsByEmail("john.smith@example.com")).thenReturn(true);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
@@ -59,7 +64,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc03_registerFreelancer_ExistingCpf() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123",
+                "12345678900", tags);
         when(freelancerRepository.existsByCpf("12345678900")).thenReturn(true);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
@@ -71,7 +77,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc04_registerFreelancer_InvalidConfirmationCode() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123",
+                "12345678900", tags);
         when(freelancerRepository.existsByEmail("john.smith@example.com")).thenReturn(false);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
@@ -83,7 +90,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc05_registerFreelancer_InvalidName() {
-        Freelancer freelancer = new Freelancer("John123", "Smith", "john.smith@example.com", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John123", "Smith", "john.smith@example.com", "Password123",
+                "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -94,7 +102,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc06_registerFreelancer_InvalidSurname() {
-        Freelancer freelancer = new Freelancer("John", "Smith123", "john.smith@example.com", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith123", "john.smith@example.com",
+                "Password123", "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -105,7 +114,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc07_registerFreelancer_InvalidEmail() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith", "Password123",
+                "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -116,7 +126,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc08_registerFreelancer_InvalidCpf() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith", "Password123", "abc123", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com",
+                "Password123", "abc123", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -127,7 +138,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc09_registerFreelancer_InvalidPassword() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "password", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com",
+                "password", "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "password", "123456");
@@ -138,7 +150,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc10_registerFreelancer_InvalidPasswordConfirmation() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com",
+                "Password123", "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password1234", "123456");
@@ -148,8 +161,9 @@ public class FreelancerRegisterServiceTest
     }
 
     @Test
-    void tc11_registerFreelancer_BlankFirstName() {
-        Freelancer freelancer = new Freelancer("", "Smith", "john.smith@example.com", "Password123", "12345678900", tags);
+    void tc11_registerFreelancer_BlankName() {
+        Freelancer freelancer = new Freelancer("", "Smith", "john.smith@example.com",
+                "Password123", "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -159,8 +173,9 @@ public class FreelancerRegisterServiceTest
     }
 
     @Test
-    void tc12_registerFreelancer_BlankLastName() {
-        Freelancer freelancer = new Freelancer("John", "", "john.smith@example.com", "Password123", "12345678900", tags);
+    void tc12_registerFreelancer_BlankSurnameName() {
+        Freelancer freelancer = new Freelancer("John", "", "john.smith@example.com",
+                "Password123", "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -171,7 +186,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc13_registerFreelancer_BlankEmail() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "",
+                "Password123", "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -182,7 +198,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc14_registerFreelancer_BlankCPF() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123", "", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com",
+                "Password123", "", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -193,7 +210,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc15_registerFreelancer_BlankPassword() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com",
+                "", "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");
@@ -204,7 +222,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc16_registerFreelancer_BlankConfirmPassword() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123", "12345678900", tags);
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com",
+                "Password123", "12345678900", tags);
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "", "123456");
@@ -215,7 +234,8 @@ public class FreelancerRegisterServiceTest
 
     @Test
     void tc17_registerFreelancer_BlankTags() {
-        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com", "Password123", "12345678900", List.of());
+        Freelancer freelancer = new Freelancer("John", "Smith", "john.smith@example.com",
+                "Password123", "12345678900", List.of());
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
             freelancerService.registerFreelancer(freelancer, "Password123", "123456");

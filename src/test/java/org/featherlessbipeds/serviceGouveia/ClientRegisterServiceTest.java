@@ -1,6 +1,6 @@
 package org.featherlessbipeds.serviceGouveia;
 
-import org.featherlessbipeds.gouveia.entity.Client;
+import org.featherlessbipeds.gouveia.model.Client;
 import org.featherlessbipeds.gouveia.exception.RegisterException;
 import org.featherlessbipeds.gouveia.repository.ClientRepository;
 import org.featherlessbipeds.gouveia.service.ClientRegisterService;
@@ -13,12 +13,12 @@ import org.mockito.MockitoAnnotations;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-public class ClientRegisterServiceTest
-{
+public class ClientRegisterServiceTest {
     @Mock
     private ClientRepository clientRepository;
     @InjectMocks
     private ClientRegisterService clientService;
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
@@ -120,7 +120,7 @@ public class ClientRegisterServiceTest
     }
 
     @Test
-    void tc09_registerClient_BlankFirstName() {
+    void tc09_registerClient_BlankName() {
         Client client = new Client("", "Smith", "john.smith@example.com", "Password123");
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
@@ -131,7 +131,7 @@ public class ClientRegisterServiceTest
     }
 
     @Test
-    void tc10_registerClient_BlankLastName() {
+    void tc10_registerClient_BlankSurname() {
         Client client = new Client("John", "", "john.smith@example.com", "Password123");
 
         RegisterException exception = assertThrows(RegisterException.class, () -> {
